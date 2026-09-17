@@ -1,71 +1,104 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>董玉琳 · 单词表</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>董玉琳 · 单词朗读</title>
 <style>
-  body { margin:0; padding:32px 20px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f4f6fb; color:#1f2937; }
-  h1 { text-align:center; font-size:24px; margin:0 0 4px; }
-  .meta { text-align:center; color:#8a94a6; font-size:13px; margin-bottom:28px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; max-width:1100px; margin:0 auto; }
-  .card { background:#fff; border-radius:12px; padding:18px 16px; box-shadow:0 2px 10px rgba(31,41,55,.06); text-align:center; }
-  .word { font-size:20px; font-weight:700; color:#2f54eb; }
-  .phonetic { font-size:13px; color:#8a94a6; margin-top:6px; }
-  .translation { font-size:16px; margin-top:10px; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Microsoft YaHei','PingFang SC',system-ui,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a202c;}
+.app{max-width:960px;margin:0 auto;padding:12px 12px 60px;}
+.page-header{text-align:center;padding:20px 16px 14px;background:white;border-radius:16px;border:1px solid #e2e8f0;margin-bottom:14px;}
+.page-header .label{font-size:12px;color:#718096;margin-bottom:4px;}
+.page-header h1{font-size:22px;font-weight:700;color:#1a202c;margin-bottom:4px;}
+.page-header .sub{font-size:13px;color:#a0aec0;}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#718096;white-space:nowrap;}
+.tab.active{color:white;border-color:transparent;}
+.detail-panel{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;}
+.detail-inner{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+.detail-cat{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:8px;font-weight:600;}
+.detail-word{font-size:1.9rem;font-weight:700;font-family:'Consolas','Courier New',monospace;margin-bottom:2px;line-height:1.2;}
+.detail-phonetic{font-size:13px;color:#a0aec0;margin-bottom:6px;}
+.detail-meaning{font-size:15px;color:#1a202c;font-weight:700;margin-bottom:12px;}
+.btn-say,.btn-slow{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:8px 16px;cursor:pointer;border-radius:10px;font-family:inherit;}
+.btn-say{background:white;border:1px solid #cbd5e0;color:#1a202c;}
+.btn-slow{background:#fffbeb;border:1px solid #f6d860;color:#92400e;}
+.say-row{display:flex;gap:8px;flex-wrap:wrap;}
+.anim-box{border-radius:12px;height:170px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;font-size:56px;overflow:hidden;}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;}
+.section-header h2{font-size:15px;font-weight:700;}
+.s-badge{font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600;}
+.s-count{font-size:12px;color:#a0aec0;margin-left:auto;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;margin-bottom:20px;}
+.word-card{background:white;border:1.5px solid #e2e8f0;border-radius:12px;padding:11px 8px;cursor:pointer;text-align:center;user-select:none;transition:transform 0.15s;}
+.word-card:active{transform:scale(0.95);}
+.word-card.active{border-width:2px;}
+.card-icon{font-size:20px;margin-bottom:3px;display:block;}
+.card-word{font-size:11px;font-weight:700;font-family:'Consolas','Courier New',monospace;margin-bottom:2px;word-break:break-all;}
+.card-mn{font-size:10px;color:#718096;}
+.search-wrap{position:relative;margin-bottom:14px;}
+.search-input{width:100%;padding:11px 40px;border-radius:24px;border:1.5px solid #e2e8f0;background:white;font-size:14px;font-family:inherit;color:#1a202c;outline:none;}
+.search-input:focus{border-color:#90cdf4;}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:#a0aec0;display:none;}
+.search-results{display:none;}
+.search-empty{text-align:center;padding:40px;color:#a0aec0;font-size:14px;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-26px);}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-13px);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+@keyframes wave{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-20deg);}75%{transform:rotate(20deg);}}
+@keyframes swing{0%,100%{transform:rotate(-15deg);}50%{transform:rotate(15deg);}}
+@media(max-width:600px){.detail-inner{grid-template-columns:1fr;}.anim-box{height:120px;font-size:46px;}.detail-word{font-size:1.5rem;}.cards-grid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;}}
 </style>
 </head>
 <body>
-  <h1>董玉琳 · 单词表</h1>
-  <div class="meta">共 47 个单词 · 生成时间 2026-09-16 17:15:00</div>
-  <div class="grid">
-<div class="card"><div class="word">if</div><div class="phonetic">/ɪf/</div><div class="translation">如果</div></div>
-<div class="card"><div class="word">appendix</div><div class="phonetic">/əˈpen.dɪks/</div><div class="translation">附录</div></div>
-<div class="card"><div class="word">words</div><div class="phonetic">/wɜːdz/</div><div class="translation">单词</div></div>
-<div class="card"><div class="word">in</div><div class="phonetic">/ɪn/</div><div class="translation">在……里面</div></div>
-<div class="card"><div class="word">each</div><div class="phonetic">/iːtʃ/</div><div class="translation">每个</div></div>
-<div class="card"><div class="word">unit</div><div class="phonetic">/ˈjuː.nɪt/</div><div class="translation">单元</div></div>
-<div class="card"><div class="word">this</div><div class="phonetic">/ðɪs/</div><div class="translation">这个</div></div>
-<div class="card"><div class="word">exit</div><div class="phonetic">/ˈek.sɪt/</div><div class="translation">出口</div></div>
-<div class="card"><div class="word">job</div><div class="phonetic">/dʒɒb/</div><div class="translation">工作</div></div>
-<div class="card"><div class="word">his</div><div class="phonetic">/hɪz/</div><div class="translation">他的</div></div>
-<div class="card"><div class="word">doctor</div><div class="phonetic">/ˈdɒk.tər/</div><div class="translation">医生</div></div>
-<div class="card"><div class="word">strong</div><div class="phonetic">/strɒŋ/</div><div class="translation">强壮的</div></div>
-<div class="card"><div class="word">hair</div><div class="phonetic">/heər/</div><div class="translation">头发</div></div>
-<div class="card"><div class="word">farmer</div><div class="phonetic">/ˈfɑː.mər/</div><div class="translation">农民</div></div>
-<div class="card"><div class="word">kind</div><div class="phonetic">/kaɪnd/</div><div class="translation">亲切的</div></div>
-<div class="card"><div class="word">quiet</div><div class="phonetic">/ˈkwaɪ.ət/</div><div class="translation">安静的</div></div>
-<div class="card"><div class="word">nurse</div><div class="phonetic">/nɜːs/</div><div class="translation">护士</div></div>
-<div class="card"><div class="word">best</div><div class="phonetic">/best/</div><div class="translation">最好的</div></div>
-<div class="card"><div class="word">office</div><div class="phonetic">/ˈɒf.ɪs/</div><div class="translation">办公室</div></div>
-<div class="card"><div class="word">worker</div><div class="phonetic">/ˈwɜː.kər/</div><div class="translation">工人</div></div>
-<div class="card"><div class="word">read</div><div class="phonetic">/riːd/</div><div class="translation">阅读</div></div>
-<div class="card"><div class="word">Chinese</div><div class="phonetic">/tʃaɪˈniːz/</div><div class="translation">中文；中国的</div></div>
-<div class="card"><div class="word">factory</div><div class="phonetic">/ˈfæk.tər.i/</div><div class="translation">工厂</div></div>
-<div class="card"><div class="word">play</div><div class="phonetic">/pleɪ/</div><div class="translation">玩；演奏</div></div>
-<div class="card"><div class="word">busy</div><div class="phonetic">/ˈbɪz.i/</div><div class="translation">忙碌的</div></div>
-<div class="card"><div class="word">game</div><div class="phonetic">/ɡeɪm/</div><div class="translation">游戏</div></div>
-<div class="card"><div class="word">tired</div><div class="phonetic">/ˈtaɪəd/</div><div class="translation">疲倦的</div></div>
-<div class="card"><div class="word">football</div><div class="phonetic">/ˈfʊt.bɔːl/</div><div class="translation">足球</div></div>
-<div class="card"><div class="word">chore</div><div class="phonetic">/tʃɔːr/</div><div class="translation">家务活</div></div>
-<div class="card"><div class="word">basketball</div><div class="phonetic">/ˈbɑː.skɪt.bɔːl/</div><div class="translation">篮球</div></div>
-<div class="card"><div class="word">cook</div><div class="phonetic">/kʊk/</div><div class="translation">烹饪</div></div>
-<div class="card"><div class="word">clean</div><div class="phonetic">/kliːn/</div><div class="translation">打扫；干净的</div></div>
-<div class="card"><div class="word">always</div><div class="phonetic">/ˈɔːl.weɪz/</div><div class="translation">总是</div></div>
-<div class="card"><div class="word">room</div><div class="phonetic">/ruːm/</div><div class="translation">房间</div></div>
-<div class="card"><div class="word">look</div><div class="phonetic">/lʊk/</div><div class="translation">看</div></div>
-<div class="card"><div class="word">after</div><div class="phonetic">/ˈɑːf.tər/</div><div class="translation">在……之后</div></div>
-<div class="card"><div class="word">afternoon</div><div class="phonetic">/ˌɑːf.təˈnuːn/</div><div class="translation">下午</div></div>
-<div class="card"><div class="word">together</div><div class="phonetic">/təˈɡeð.ər/</div><div class="translation">一起</div></div>
-<div class="card"><div class="word">there</div><div class="phonetic">/ðeər/</div><div class="translation">那里</div></div>
-<div class="card"><div class="word">people</div><div class="phonetic">/ˈpiː.pəl/</div><div class="translation">人们</div></div>
-<div class="card"><div class="word">playground</div><div class="phonetic">/ˈpleɪ.ɡraʊnd/</div><div class="translation">操场</div></div>
-<div class="card"><div class="word">children</div><div class="phonetic">/ˈtʃɪl.drən/</div><div class="translation">孩子们</div></div>
-<div class="card"><div class="word">park</div><div class="phonetic">/pɑːk/</div><div class="translation">公园</div></div>
-<div class="card"><div class="word">over</div><div class="phonetic">/ˈəʊ.vər/</div><div class="translation">在……上方</div></div>
-<div class="card"><div class="word">sweep</div><div class="phonetic">/swiːp/</div><div class="translation">打扫</div></div>
-<div class="card"><div class="word">floor</div><div class="phonetic">/flɔːr/</div><div class="translation">地板</div></div>
-<div class="card"><div class="word">child</div><div class="phonetic">/tʃaɪld/</div><div class="translation">孩子</div></div>
+<div class="app">
+<div class="page-header">
+  <div class="label">📖 点击单词即可朗读</div>
+  <h1>董玉琳 单词朗读</h1>
+  <div class="sub">1个分类 · 共24个单词 · 点击朗读 · 慢速练习</div>
+</div>
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input class="search-input" id="searchInput" type="text" placeholder="搜索单词或中文含义..." oninput="doSearch(this.value)" autocomplete="off">
+  <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+</div>
+<div class="tabs" id="tabBar"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-inner">
+    <div>
+      <span class="detail-cat" id="dCat"></span>
+      <div class="detail-word" id="dWord"></div>
+      <div class="detail-phonetic" id="dPh"></div>
+      <div class="detail-meaning" id="dMn"></div>
+      <div class="say-row">
+        <button class="btn-say" onclick="playWord(1)">🔊 朗读</button>
+        <button class="btn-slow" onclick="playWord(0.5)">🐢 慢读</button>
+      </div>
+    </div>
+    <div class="anim-box" id="animBox"><span id="animIcon">📖</span></div>
   </div>
+</div>
+<div id="mainContent"></div>
+<div class="search-results" id="searchResults"></div>
+</div>
+<script>
+const catMeta={"c0": {"label": "图1", "color": "#2B6CB0", "bg": "#ebf4ff"}};
+const words={"c0": [{"word": "include", "ph": "/ɪnˈkluːd/", "mn": "包括", "ic": "📥"}, {"word": "iostream", "ph": "/ˈaɪ.oʊ.striːm/", "mn": "输入输出流", "ic": "📖"}, {"word": "turn", "ph": "/tɜːrn/", "mn": "转动；轮到", "ic": "🔄"}, {"word": "cat", "ph": "/kæt/", "mn": "猫", "ic": "🐱"}, {"word": "con", "ph": "/kɒn/", "mn": "反对；骗局", "ic": "🚫"}, {"word": "head", "ph": "/hed/", "mn": "头；头部", "ic": "🗣️"}, {"word": "nullptr", "ph": "/ˈnʌl.ptər/", "mn": "空指针", "ic": "📖"}, {"word": "fork", "ph": "/fɔːrk/", "mn": "叉子；分叉", "ic": "🍴"}, {"word": "gift", "ph": "/ɡɪft/", "mn": "礼物", "ic": "🎁"}, {"word": "listnode", "ph": "/ˈlɪst.noʊd/", "mn": "链表节点", "ic": "📖"}, {"word": "answer", "ph": "/ˈæn.sər/", "mn": "回答；答案", "ic": "💬"}, {"word": "the", "ph": "/ðə/", "mn": "这；那（定冠词）", "ic": "📖"}, {"word": "questions", "ph": "/ˈkwes.tʃənz/", "mn": "问题（复数）", "ic": "❓"}, {"word": "lock", "ph": "/lɒk/", "mn": "锁；锁定", "ic": "🔒"}, {"word": "up", "ph": "/ʌp/", "mn": "向上；起来", "ic": "⬆️"}, {"word": "battery", "ph": "/ˈbæt.ər.i/", "mn": "电池", "ic": "🔋"}, {"word": "charge", "ph": "/tʃɑːrdʒ/", "mn": "充电；收费", "ic": "🔌"}, {"word": "max", "ph": "/mæks/", "mn": "最大值", "ic": "📈"}, {"word": "maximum", "ph": "/ˈmæk.sɪ.məm/", "mn": "最大值；最大的", "ic": "🔝"}, {"word": "minimum", "ph": "/ˈmɪn.ɪ.məm/", "mn": "最小值；最小的", "ic": "🔻"}, {"word": "sing", "ph": "/sɪŋ/", "mn": "唱歌", "ic": "🎤"}, {"word": "for", "ph": "/fɔːr/", "mn": "为了；对于", "ic": "📖"}, {"word": "can", "ph": "/kæn/", "mn": "能；可以", "ic": "📖"}, {"word": "mine", "ph": "/maɪn/", "mn": "我的；矿", "ic": "⛏️"}]};
+const anims=['animation:bounce 0.8s infinite','animation:spin 1s linear infinite','animation:pulse 0.7s infinite','animation:float 1.2s infinite','animation:shake 0.5s infinite','animation:wave 0.8s infinite','animation:swing 1s infinite'];
+let currentCat=Object.keys(catMeta)[0],currentWord=null,animTimer=null;
+function playWord(rate){if(!currentWord)return;const au=new Audio('https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(currentWord.word)+'&type=1');au.playbackRate=rate;au.play().catch(()=>{if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(currentWord.word);u.lang='en-US';u.rate=rate;speechSynthesis.speak(u);}});}
+function selectWord(w,cardEl,cat){if(cat)currentCat=cat;currentWord=w;document.querySelectorAll('.word-card').forEach(c=>c.classList.remove('active'));if(cardEl)cardEl.classList.add('active');const m=catMeta[currentCat];const panel=document.getElementById('detailPanel');panel.style.display='block';document.getElementById('dCat').textContent=m.label;document.getElementById('dCat').style.cssText='background:'+m.bg+';color:'+m.color+';display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:8px;font-weight:600;';document.getElementById('dWord').textContent=w.word;document.getElementById('dWord').style.color=m.color;document.getElementById('dPh').textContent=w.ph;document.getElementById('dMn').textContent=w.mn;const box=document.getElementById('animBox');const icon=document.getElementById('animIcon');box.style.background=m.bg;icon.textContent=w.ic;icon.style.cssText=anims[w.word.charCodeAt(0)%anims.length]+';display:inline-block;';if(animTimer)clearTimeout(animTimer);animTimer=setTimeout(()=>{icon.style.animation='none';},3000);playWord(1);panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function makeCard(w,cat){const d=document.createElement('div');d.className='word-card';d.innerHTML=`<span class="card-icon">${w.ic}</span><div class="card-word">${w.word}</div><div class="card-mn">${w.mn}</div>`;d.onclick=()=>selectWord(w,d,cat||currentCat);return d;}
+function renderCat(cat){currentCat=cat;document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');t.style.background='white';t.style.color='#718096';});const at=document.querySelector('.tab[data-cat="'+cat+'"]');if(at){const m=catMeta[cat];at.classList.add('active');at.style.background=m.color;at.style.color='white';}const content=document.getElementById('mainContent');const m=catMeta[cat];const ws=words[cat];content.innerHTML='';const hdr=document.createElement('div');hdr.className='section-header';hdr.innerHTML=`<h2 style="color:${m.color}">${m.label}</h2><span class="s-count">${ws.length}个单词</span>`;content.appendChild(hdr);const grid=document.createElement('div');grid.className='cards-grid';ws.forEach(w=>grid.appendChild(makeCard(w)));content.appendChild(grid);}
+function buildTabs(){const tabBar=document.getElementById('tabBar');Object.keys(catMeta).forEach(cat=>{const m=catMeta[cat];const t=document.createElement('div');t.className='tab';t.dataset.cat=cat;t.textContent=m.label;t.onclick=()=>renderCat(cat);tabBar.appendChild(t);});}
+function doSearch(val){const q=val.trim().toLowerCase();document.getElementById('searchClear').style.display=q?'block':'none';const sr=document.getElementById('searchResults'),mc=document.getElementById('mainContent'),tabs=document.getElementById('tabBar');if(!q){sr.style.display='none';mc.style.display='';tabs.style.display='flex';return;}mc.style.display='none';tabs.style.display='none';sr.style.display='block';const hits=[];Object.keys(words).forEach(cat=>words[cat].forEach(w=>hits.push({...w,cat})));const filtered=hits.filter(w=>w.word.toLowerCase().includes(q)||w.mn.includes(q));if(!filtered.length){sr.innerHTML='<div class="search-empty">😕 没找到"'+val+'"</div>';return;}sr.innerHTML='';const grid=document.createElement('div');grid.className='cards-grid';filtered.forEach(w=>grid.appendChild(makeCard(w,w.cat)));sr.appendChild(grid);}
+function clearSearch(){document.getElementById('searchInput').value='';doSearch('');}
+buildTabs();renderCat(Object.keys(catMeta)[0]);
+</script>
 </body>
 </html>
